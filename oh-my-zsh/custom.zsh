@@ -37,6 +37,30 @@ function rmp () {
   kubectl get pods -l $1 -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | xargs -n 1 kubectl delete pod
 }
 
+function kcidr() {
+ # kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | xargs -I {} sh -c 'kubectl get node {} -o yaml | grep -E "^  name:|podCIDR: [0-9]" '
+ kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.spec.podCIDR}{"\n"}'
+}
+
+function khelp(){
+runpod=$(cat << 'EOF'
+# -- Run a pod in one line and assign to specific Node.
+kubectl run netshoot1 --image nicolaka/netshoot --restart=Never --overrides='{"spec": {"nodeSelector":{"kubernetes.io/hostname":"lan-k8s-0-1"}}}' -- tail -f /dev/null
+# -- Get service cidr
+kubectl cluster-info dump | grep -m 1 service-cluster-ip-range
+# -- Get cluster cidr
+kubectl cluster-info dump | grep -m 1 cluster-cidr
+# -- Get each node' pod subnet
+kubectl get nodes -A -o jsonpath='{range .items[*]}{.spec.podCIDR}{"\\n"}{end}'
+# -- Get each pod's ip, use " | " as delimiter
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"/"}{.metadata.name}{" | "}{.status.podIP}{"\\n"}{end}'
+# -- Patch
+kubectl patch deployment antrea-mc-controller -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"lan-k8s-0-0"}}}}}'
+EOF
+)
+echo $runpod
+}
+
 function getimgs(){
   # kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1
   # https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
@@ -90,4 +114,13 @@ function du1(){
   if [[ $os == "Linux" ]];then
      du -h --max-depth=1 | sort -hr
   fi
+}
+
+function utils(){
+text=$(cat << 'EOF'
+#convert yaml to one line json
+yq -o=json -I=0 '.'  ~/workspaces/tmp/patch.yml
+EOF
+)
+echo $text
 }
