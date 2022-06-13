@@ -1,0 +1,35 @@
+{
+    "explorer.confirmDragAndDrop": false,
+    "http.proxyAuthorization": null,
+    "http.proxy": "http://<ip>:3128",
+    "http.proxyStrictSSL": false,
+    "go.gopath": "/Users/workspaces/codes",
+    "window.title": "${activeEditorLong}${separator}${rootName}",
+    "markdown.extension.tableFormatter.enabled": false,
+    "markdown.extension.toc.updateOnSave": false,
+    "editor.renderWhitespace": "all",
+    "editor.formatOnSave": false,
+    "go.formatTool": "gofmt",
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+        },
+    },
+    "go.toolsManagement.autoUpdate": true,
+    "emeraldwalk.runonsave": {
+      "commands": [
+          {
+              "match": "/Users/codes/antrea/.*",
+              "isAsync": true,
+              "cmd": "goimports -w -local github.com/antrea.io/antrea ${file}"
+          }
+      ]
+  },
+  "explorer.confirmDelete": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "window.zoomLevel": 1,
+}
